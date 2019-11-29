@@ -194,7 +194,7 @@ Now let's just rebuild the app again. You could see that the build is succeeded 
 
 <img src="Screenshots/BuildSuccess2.png" Width="650" />
  
-I hope now you have understood what is Bindable Layout and how to use it in Xamarin.Forms.
+I hope now you have understood what is Compiled Bindings and how to use it in Xamarin.Forms.
  
 Thanks for reading. Please share your comments and feedback. Happy Coding…!
 
