@@ -118,24 +118,18 @@ Go to MainPage.xaml and write the following code
 ```
 
 Now, you could see that I have misspelled the property name bound to the ItemsSource property. Let's try to build this project. You could see that the project is still build perfectly.
-<p align="center">
-  <img src="Screenshots/BuildSuccess1.png" Width="650" />
-</p>
+<img src="Screenshots/BuildSuccess1.png" Width="650" />
 
 So now, let's turn on the compiled bindings to get this caught in the build time itself. The first thing to do is to our app to compile the XAML for the entire assembly. Type below code in the MainPage.xaml.cs as shown in the below image. 
 
 ```xaml
 [assembly:XamlCompilation(XamlCompilationOptions.Compile)]
 ```
-<p align="center">
-  <img src="Screenshots/XAMLCompilationSetting.png" Width="450" />
-</p>
+<img src="Screenshots/XAMLCompilationSetting.png" Width="450" />
 
  You can even skip this setting to be applied for a page(s) as shown below.
 
-<p align="center">
-  <img src="Screenshots/XAMLCompilationSkip.png" Width="400" />
-</p>
+<img src="Screenshots/XAMLCompilationSkip.png" Width="400" />
 
 Now let's just go to the XAML page and tell it what to just check against. The data for the XAML comes from PlatformsViewModel which is separated from the XAML front end. So we need to tell the XAML file where to find the PlatformsViewModel and that PlatformsViewModel is what it should be checking XAML data types against. We have already declared the namespace where we have the PlatformsViewModel. All we need to do is mention the data type for the content page to be of type ViewModel (2nd line in the below code snippet).
 
@@ -148,15 +142,11 @@ Let's try to build the project again.
  
 That's great..! Now, you could see a build error caught in the build time itself. 
 
-<p align="center">
-  <img src="Screenshots/BuildTimeError1.png" Width="650" />
-</p>
+<img src="Screenshots/BuildTimeError1.png" Width="650" />
 
 Now, let's correct the property name bound to the ItemsSource of the BindableLayout from PlatformList to PlatformsList as declared in the PlatformsViewModel. Let's try to build the project again. You could still see that we are getting a build error.  
 
-<p align="center">
-  <img src="Screenshots/BuildTimeError2.png" Width="650" />
-</p>
+<img src="Screenshots/BuildTimeError2.png" Width="650" />
 
 The reason for this build error is we are missing an important thing here. The DataTemplate which is in the bindable layout tells the bindable layout how to display each individual item in it. Also, we could see that it has different items that are not of type PlatformsViewModel but of type PlatformInfo. So we have to do the same thing similar to the XAML file on the data template to tell them what its data type is. Insert the below codes in your XAML. 
 
@@ -201,9 +191,7 @@ Below is how the final XAML code looks like.
 
 Now let's just rebuild the app again. You could see that the build is succeeded now. 
 
-<p align="center">
-  <img src="Screenshots/BuildSuccess2.png" Width="650" />
-</p>
+<img src="Screenshots/BuildSuccess2.png" Width="650" />
  
 I hope now you have understood what is Bindable Layout and how to use it in Xamarin.Forms.
  
