@@ -118,6 +118,7 @@ Go to MainPage.xaml and write the following code
 ```
 
 Now, you could see that I have misspelled the property name bound to the ItemsSource property. Let's try to build this project. You could see that the project is still build perfectly.
+
 <img src="Screenshots/BuildSuccess1.png" Width="650" />
 
 So now, let's turn on the compiled bindings to get this caught in the build time itself. The first thing to do is to our app to compile the XAML for the entire assembly. Type below code in the MainPage.xaml.cs as shown in the below image. 
@@ -127,7 +128,7 @@ So now, let's turn on the compiled bindings to get this caught in the build time
 ```
 <img src="Screenshots/XAMLCompilationSetting.png" Width="450" />
 
- You can even skip this setting to be applied for a page(s) as shown below.
+You can even skip this setting to be applied for a page(s) as shown below.
 
 <img src="Screenshots/XAMLCompilationSkip.png" Width="400" />
 
