@@ -1,25 +1,25 @@
-XamarinForms-BindableLayout
-================
+XamarinForms-Compiled Bindings
+===============================
 
-In this article, you will learn how to use a Bindable Layout in Xamarin.Forms.
-<p align="center">
-  <img src="Screenshots/BindableLayout2.png" Width="400" />
-</p>
+In this article, you will learn what Compiled Bindings in Xamarin is all about and how to use it to improve performance and avoid spelling errors.
 
 Xamarin.Forms is an open-source UI framework that runs on multiple platforms with a single shared codebase. It allows developers to create user interfaces in XAML with code-behind in C#. These interfaces are rendered as performant native controls on each platform.
 
-# Bindable Layout
-If you are someone who is looking for a lightweight approach to display a small collection of items, however, do not wish to use [ListView](https://docs.microsoft.com/en-us/dotnet/api/xamarin.forms.listview) or [CollectionView](https://docs.microsoft.com/en-us/dotnet/api/xamarin.forms.collectionview) considering the memory and performance issues, then you are at the right place. You are looking for a Bindable Layout. 
+# Compiled Bindings
+If you are a Xamarin or .Net developer you would probably know what is [DataBinding](https://docs.microsoft.com/en-us/xamarin/xamarin-forms/xaml/xaml-basics/data-binding-basics). It is a concept where you can dynamically load in all the pages information at runtime when the user is navigating to a page. However, when you have pages that are really complicated that have a lot of DataBinding, then it can take a lot of time for Xamarin to look at every single element of the XAML.
 
-Bindable layouts enable any layout class to generate its content by binding to a collection of items. It provides an option to set and customize the appearance of each item with a [DataTemplate](https://docs.microsoft.com/en-us/dotnet/api/xamarin.forms.datatemplate). Bindable layouts are provided by the BindableLayout class, which exposes the following attached properties:
-* ItemsSource – specifies the list of items to be displayed.
-* ItemTemplate – specifies the [DataTemplate](https://docs.microsoft.com/en-us/dotnet/api/xamarin.forms.datatemplate) to apply to each item in the collection of items displayed.
-* ItemTemplateSelector – specifies the DataTemplateSelector that will be used to choose a [DataTemplate](https://docs.microsoft.com/en-us/dotnet/api/xamarin.forms.datatemplate) for an item at runtime.
- 
- In simple terms, a bindable layout is a small version of [ListView](https://docs.microsoft.com/en-us/dotnet/api/xamarin.forms.listview) to display a series of items with the same pattern. However, the only difference is that a Bindable Layout does not allow your items to scroll, unlike [ListView](https://docs.microsoft.com/en-us/dotnet/api/xamarin.forms.listview).
+Moreover, as a developer if you have misspelled something you probably won't know the error until you navigate to that page and see how the UI renders. Only at the runtime when the UI loads we would realize that this is not what we expect it to be. So we use the compiled bindings to solve these problems.
+
+**In simple words, Compiled Bindings just tells your app to compile the XAML stuff before you run the app.**
+
+The advantage of the Compiled Bindings are: 
+* More performance
+* Catches spelling errors and other issues with data binding at compile-time and build time itself
 
  ### Prerequisites
 * Visual Studio 2017 or later (Windows or Mac)
+
+Let's take the XAML code from my article BindableLayout as an example for understanding what is Compiled Bindings in Xamarin.Forms.
 
 ## Setting up a Xamarin.Forms Project
 Let’s start by creating a new Xamarin.Forms project by following the below steps.
@@ -54,35 +54,16 @@ Wait for the solution to load. Expand the solution using the Solution Explorer. 
  
 Expand the .NET Standard project and select the XAML page and double-click to open the MainPage.xaml page. You now have a basic Xamarin.Forms app. Press F5 or click the run button to try it out.
 
-## Create a Bindable Layout
+## Setting up the model and view model
 
-In this article, we will see how to create and use a Bindable Layout to display the list of platforms supported by Xamarin. For that first lets us create the model and view model classes required for binding to the view.
+For that first lets us create the model and view model classes required for binding to the view.
  
-Create a new class called PlatformInfo.cs and declare the below properties. 
+Create a new class called PlatformInfo.cs and declare the below properties.
 ```c#
-public class PlatformInfo : INotifyPropertyChanged
+public class PlatformInfo
 {
-    private bool _isChecked;
-    private string _platformName;
-
-    public bool IsChecked
-    {
-        get { return _isChecked; }
-        set { _isChecked = value; NotifyPropertyChanged(); }
-    }
-
-    public string PlatformName
-    {
-        get { return _platformName; }
-        set { _platformName = value; NotifyPropertyChanged(); }
-    }
-
-    public event PropertyChangedEventHandler PropertyChanged;
-    public void NotifyPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
-    {
-        if (this.PropertyChanged != null)
-            this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-    }
+    public bool IsChecked { get; set; }
+	public string PlatformName { get; set; }
 }
 ```
 Create a new class called ViewModel.cs and write the below code. 
@@ -107,63 +88,122 @@ public class ViewModel
     }
 } 
 ```
-We have created the required collection and model object for binding to a Bindable Layout. Now, let's design a UI with a Bindable Layout to display the created list.
 
 ## Setting up the User Interface
 Go to MainPage.xaml and write the following code
- 
-### MainPage.xaml
-```xml
+
+```xaml
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:local="clr-namespace:BindableLayout"
+             xmlns:viewModel="clr-namespace:BindableLayout.ViewModel"
              mc:Ignorable="d"
              x:Class="BindableLayout.MainPage">
     <ContentPage.BindingContext>
-        <local:ViewModel />
+        <viewModel:PlatformsViewModel />
     </ContentPage.BindingContext>
-    <StackLayout x:Name="contactList" BindableLayout.ItemsSource="{Binding PlatformsList}" 
-                 VerticalOptions="Center" HorizontalOptions="Center" WidthRequest="150">
+    <StackLayout x:Name="contactList" BindableLayout.ItemsSource="{Binding PlatformsList}">
         <BindableLayout.ItemTemplate>
             <DataTemplate>
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="0.5"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="30" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
+                <StackLayout Orientation="Horizontal">
                     <CheckBox IsChecked="{Binding IsChecked}" VerticalOptions="Center" />
-                    <Label Grid.Column="1" TextColor="Black" Margin="10,0" Text="{Binding PlatformName}" IsEnabled="{Binding IsChecked}" VerticalOptions="Center">
-                        <Label.Triggers>
-                            <DataTrigger TargetType="Label" Binding="{Binding IsChecked}" Value="true">
-                                <Setter Property="TextColor" Value="Black"/>
-                            </DataTrigger>
-                            <DataTrigger TargetType="Label" Binding="{Binding IsChecked}" Value="false">
-                                <Setter Property="TextColor" Value="DarkGray"/>
-                            </DataTrigger>
-                        </Label.Triggers>
-                    </Label>
-                    <BoxView Grid.Row="1" Grid.ColumnSpan="2" HeightRequest="0.5" BackgroundColor="LightGray"/>
-                </Grid>
+                    <Label TextColor="Black" Margin="10,0" Text="{Binding PlatformName}" VerticalOptions="Center" />
+                </StackLayout>
             </DataTemplate>
         </BindableLayout.ItemTemplate>
     </StackLayout>
 </ContentPage>
 ```
 
-Click the "Run" button to try it out.
+Now, you could see that I have misspelled the property name bound to the ItemsSource property. Let's try to build this project. You could see that the project is still build perfectly.
 <p align="center">
-  <img src="Screenshots/BindableLayout1.png" Width="400" />
+  <img src="Screenshots/BuildSuccess1.png" Width="650" />
 </p>
 
-### Note:
-Bindable layouts should only be used when the collection of items to be displayed is small, and scrolling and selection aren't required. While scrolling can be provided by wrapping a bindable layout in a [ScrollView](https://docs.microsoft.com/en-us/dotnet/api/xamarin.forms.scrollview), this is not recommended as bindable layouts lack UI virtualization. When scrolling is required, a scrollable view that includes UI virtualization, such as [ListView](https://docs.microsoft.com/en-us/dotnet/api/xamarin.forms.listview) or [CollectionView](https://docs.microsoft.com/en-us/dotnet/api/xamarin.forms.collectionview), should be used. Failure to observe this recommendation can lead to performance issues.
+So now, let's turn on the compiled bindings to get this caught in the build time itself. The first thing to do is to our app to compile the XAML for the entire assembly. Type below code in the MainPage.xaml.cs as shown in the below image. 
+
+```xaml
+[assembly:XamlCompilation(XamlCompilationOptions.Compile)]
+```
+<p align="center">
+  <img src="Screenshots/XAMLCompilationSetting.png" Width="450" />
+</p>
+
+ You can even skip this setting to be applied for a page(s) as shown below.
+
+<p align="center">
+  <img src="Screenshots/XAMLCompilationSkip.png" Width="400" />
+</p>
+
+Now let's just go to the XAML page and tell it what to just check against. The data for the XAML comes from PlatformsViewModel which is separated from the XAML front end. So we need to tell the XAML file where to find the PlatformsViewModel and that PlatformsViewModel is what it should be checking XAML data types against. We have already declared the namespace where we have the PlatformsViewModel. All we need to do is mention the data type for the content page to be of type ViewModel (2nd line in the below code snippet).
+
+```xaml
+xmlns:viewModel="clr-namespace:BindableLayout.ViewModel"  
+x:DataType="viewModel:PlatformsViewModel"  
+```
+
+Let's try to build the project again.  
+ 
+That's great..! Now, you could see a build error caught in the build time itself. 
+
+<p align="center">
+  <img src="Screenshots/BuildTimeError1.png" Width="650" />
+</p>
+
+Now, let's correct the property name bound to the ItemsSource of the BindableLayout from PlatformList to PlatformsList as declared in the PlatformsViewModel. Let's try to build the project again. You could still see that we are getting a build error.  
+
+<p align="center">
+  <img src="Screenshots/BuildTimeError2.png" Width="650" />
+</p>
+
+The reason for this build error is we are missing an important thing here. The DataTemplate which is in the bindable layout tells the bindable layout how to display each individual item in it. Also, we could see that it has different items that are not of type PlatformsViewModel but of type PlatformInfo. So we have to do the same thing similar to the XAML file on the data template to tell them what its data type is. Insert the below codes in your XAML. 
+
+```xml
+xmlns:models="clr-namespace:BindableLayout.Model"  
+```
+
+```xml
+<DataTemplate x:DataType="models:PlatformInfo">  
+    ...  
+</DataTemplate>
+```
+
+Below is how the final XAML code looks like. 
+
+```xml
+<?xml version="1.0" encoding="utf-8" ?>  
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"  
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"  
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"  
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"  
+             xmlns:viewModel="clr-namespace:BindableLayout.ViewModel"  
+             x:DataType="viewModel:PlatformsViewModel"  
+             xmlns:models="clr-namespace:BindableLayout.Model"  
+             mc:Ignorable="d"  
+             x:Class="BindableLayout.MainPage">  
+    <ContentPage.BindingContext>  
+        <viewModel:PlatformsViewModel />  
+    </ContentPage.BindingContext>  
+    <StackLayout x:Name="contactList" BindableLayout.ItemsSource="{Binding PlatformsList}">  
+        <BindableLayout.ItemTemplate>  
+            <DataTemplate x:DataType="models:PlatformInfo">  
+                <StackLayout Orientation="Horizontal">  
+                    <CheckBox IsChecked="{Binding IsChecked}" VerticalOptions="Center" />  
+                    <Label TextColor="Black" Margin="10,0" Text="{Binding PlatformName}" VerticalOptions="Center" />  
+                </StackLayout>  
+            </DataTemplate>  
+        </BindableLayout.ItemTemplate>  
+    </StackLayout>  
+</ContentPage>
+```
+
+Now let's just rebuild the app again. You could see that the build is succeeded now. 
+
+<p align="center">
+  <img src="Screenshots/BuildSuccess2.png" Width="650" />
+</p>
  
 I hope now you have understood what is Bindable Layout and how to use it in Xamarin.Forms.
  
